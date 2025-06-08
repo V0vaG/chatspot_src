@@ -1,32 +1,161 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Chatroom</title>
+    <title>ChatSpot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #ece5dd;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        header {
+            background-color: #075E54;
+            color: white;
+            padding: 10px;
+            font-size: 20px;
+        }
+
+        #chat-box {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message {
+            max-width: 60%;
+            margin-bottom: 10px;
+            padding: 10px 15px;
+            border-radius: 10px;
+            clear: both;
+            word-wrap: break-word;
+        }
+
+        .you {
+            background-color: #DCF8C6;
+            align-self: flex-end;
+        }
+
+        .other {
+            background-color: #ffffff;
+            align-self: flex-start;
+        }
+
+        #form {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: #f0f0f0;
+            gap: 10px;
+        }
+
+        #msg {
+            flex: 1;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 20px;
+            background-color: white;
+            font-size: 16px;
+            outline: none;
+        }
+
+        #file {
+            display: none;
+        }
+
+        #upload-button,
+        #send-button {
+            width: 45px;
+            height: 45px;
+            background-color: #075E54;
+            color: white;
+            font-size: 22px;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        #upload-button:hover,
+        #send-button:hover {
+            background-color: #0b806a;
+        }
+    </style>
 </head>
 <body>
-    <h2>Welcome, {{ nickname }}</h2>
-    <ul id="messages"></ul>
-    <form id="chat-form">
-        <input id="msg" autocomplete="off"><button>Send</button>
+    <header>
+        ChatSpot – Welcome, {{ nickname }} <br>
+        <small id="user-count">Users Online: 1</small>
+    </header>
+
+    <div id="chat-box"></div>
+
+    <form id="form">
+        <input id="msg" autocomplete="off" placeholder="Type a message..." />
+
+        <input type="file" id="file" accept="image/*,application/pdf,.zip,.rar,.doc,.docx">
+        <label for="file" id="upload-button">+</label>
+
+        <button type="submit" id="send-button">➤</button>
     </form>
 
     <script>
         var socket = io();
+        const chatBox = document.getElementById('chat-box');
+        const nickname = "{{ nickname }}";
 
-        document.getElementById('chat-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            var input = document.getElementById('msg');
-            if (input.value.trim() !== "") {
-                socket.send(input.value);
-                input.value = '';
+        function appendMessage(text, isYou) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'message ' + (isYou ? 'you' : 'other');
+            msgDiv.innerHTML = text;
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        socket.on('message', function(msg) {
+            if (!msg.startsWith(nickname + ": ")) {
+                appendMessage(msg, false);
             }
         });
 
-        socket.on('message', function(msg) {
-            var item = document.createElement('li');
-            item.textContent = msg;
-            document.getElementById('messages').appendChild(item);
+        socket.on('user_count', function(count) {
+            document.getElementById('user-count').textContent = 'Users Online: ' + count;
+        });
+
+        document.getElementById('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const input = document.getElementById('msg');
+            const fileInput = document.getElementById('file');
+
+            const text = input.value.trim();
+            if (text !== "") {
+                socket.send(text);
+                appendMessage(nickname + ": " + text, true);
+                input.value = '';
+            }
+
+            if (fileInput.files.length > 0) {
+                const formData = new FormData();
+                formData.append('file', fileInput.files[0]);
+
+                fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                fileInput.value = '';
+            }
         });
     </script>
 </body>

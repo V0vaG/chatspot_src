@@ -3,13 +3,31 @@ import eventlet
 eventlet.monkey_patch()
 
 # Then continue with your imports
-from flask import Flask, render_template, request, redirect, session, url_for
-from flask_socketio import SocketIO, send
+from flask import Flask, render_template, request, redirect, session, url_for, send_from_directory
+from flask_socketio import SocketIO, send, emit
+import os
+from werkzeug.utils import secure_filename
+
+
+
 
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'supersecret'
 socketio = SocketIO(app)
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+
+app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10MB limit
+
+
+
+connected_users = 0
+
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -26,10 +44,53 @@ def chat():
         return redirect('/')
     return render_template('chat.html', nickname=nickname)
 
+@socketio.on('connect')
+def on_connect(auth):  # <-- Accept the 'auth' argument
+    global connected_users
+    connected_users += 1
+    emit('user_count', connected_users, broadcast=True)
+
+@socketio.on('disconnect')
+def on_disconnect():  # This one is OK with 0 args
+    global connected_users
+    connected_users = max(0, connected_users - 1)
+    emit('user_count', connected_users, broadcast=True)
+
 @socketio.on('message')
 def handle_message(msg):
     nickname = session.get('nickname', 'Anonymous')
     send(f"{nickname}: {msg}", broadcast=True)
+
+@app.route('/upload', methods=['POST'])
+def upload():
+    file = request.files.get('file')
+    if not file:
+        return 'No file received', 400
+
+    filename = secure_filename(file.filename)
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+    try:
+        file.save(filepath)
+    except Exception as e:
+        print(f"❌ Failed to save file: {e}")
+        return 'Internal error', 500
+
+    nickname = session.get('nickname', 'Anonymous')
+    ext = filename.rsplit('.', 1)[-1].lower()
+    if ext in ['jpg', 'jpeg', 'png', 'gif', 'webp']:
+        msg = f"{nickname} sent an image:<br><img src='/uploads/{filename}' style='max-width:200px;'>"
+    else:
+        msg = f"{nickname} uploaded a file: <a href='/uploads/{filename}' download>{filename}</a>"
+
+    socketio.emit('message', msg)
+    return ('', 204)
+
+@app.route('/uploads/<path:filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
+
+
 
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', port=5000)
