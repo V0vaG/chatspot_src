@@ -1,0 +1,6 @@
+Flask
+flask-socketio 
+eventlet
+RPi.GPIO
+pyRF24
+pynmea2
