@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     libnss3 \
     libatlas-base-dev \
+    procps \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python packages
