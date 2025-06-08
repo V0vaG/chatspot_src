@@ -3,7 +3,7 @@
 <head>
     <title>ChatSpot</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
@@ -32,13 +32,9 @@
         #qr-btn {
             background: none;
             border: none;
+            font-size: 20px;
+            color: white;
             cursor: pointer;
-        }
-
-        #qr-btn img {
-            width: 24px;
-            height: 24px;
-            filter: invert(1);
         }
 
         #chat-box {
@@ -122,18 +118,11 @@
             align-items: center;
         }
 
-
-        #qr-modal.show {
-            display: flex;
-        }
-
-
         #qr-modal-content {
             background: white;
             padding: 20px;
             border-radius: 10px;
             text-align: center;
-            max-width: 90%;
         }
 
         #qr-modal-content img {
@@ -156,9 +145,7 @@
         <span>ChatSpot – Welcome, {{ nickname }}</span>
         <div>
             <small id="user-count">Users Online: 1</small>
-            <button id="qr-btn">
-                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNnB4IiBoZWlnaHQ9IjE2cHgiIHZpZXdCb3g9IjAgMCAxNiAxNiI+PHJlY3Qgd2lkdGg9IjQiIGhlaWdodD0iNCIgeD0iMCIgeT0iMCIvPjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIHg9IjUiIHk9IjAiLz48cmVjdCB3aWR0aD0iMiIgaGVpZ2h0PSIyIiB4PSIxMCIgeT0iMCIvPjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIHg9IjEzIiB5PSIwIi8+PHJlY3Qgd2lkdGg9IjIiIGhlaWdodD0iMiIgeD0iMCIgeT0iNSIvPjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIHg9IjMiIHk9IjUiLz48cmVjdCB3aWR0aD0iMiIgaGVpZ2h0PSIyIiB4PSI1IiB5PSI1Ii8+PHJlY3Qgd2lkdGg9IjIiIGhlaWdodD0iMiIgeD0iMTAiIHk9IjUiLz48cmVjdCB3aWR0aD0iMSIgaGVpZ2h0PSIxIiB4PSIxMyIgeT0iNSIvPjxyZWN0IHdpZHRoPSIyIiBoZWlnaHQ9IjIiIHg9IjAiIHk9IjEwIi8+PHJlY3Qgd2lkdGg9IjEiIGhlaWdodD0iMSIgeD0iMyIgeT0iMTAiLz48cmVjdCB3aWR0aD0iMiIgaGVpZ2h0PSIyIiB4PSI1IiB5PSIxMCIvPjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIHg9IjciIHk9IjEwIi8+PHJlY3Qgd2lkdGg9IjIiIGhlaWdodD0iMiIgeD0iMTAiIHk9IjEwIi8+PHJlY3Qgd2lkdGg9IjEiIGhlaWdodD0iMSIgeD0iMTMiIHk9IjEwIi8+PC9zdmc+" alt="QR Icon">
-            </button>
+            <button id="qr-btn">📱 QR</button>
         </div>
     </header>
 
@@ -174,23 +161,23 @@
     </form>
 
     <!-- QR Modal -->
-    <!-- QR Modal -->
     <div id="qr-modal">
         <div id="qr-modal-content">
-            <h3>📶 WiFi</h3>
-            <img id="qr-wifi" src="" alt="WiFi QR Code">
-            <h3>🌐 Site</h3>
-            <img id="qr-url" src="" alt="Site QR Code">
+            <img src="/qr" alt="QR Code">
             <br>
-            <button id="close-qr">Close</button>
+            <button onclick="document.getElementById('qr-modal').style.display='none'">Close</button>
         </div>
     </div>
-
 
     <script>
         var socket = io();
         const chatBox = document.getElementById('chat-box');
         const nickname = "{{ nickname }}";
+
+
+        document.getElementById('qr-btn').addEventListener('click', () => {
+            document.getElementById('qr-modal').style.display = 'flex';
+        });
 
         function appendMessage(text, isYou) {
             const msgDiv = document.createElement('div');

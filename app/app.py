@@ -48,22 +48,32 @@ app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10MB limit
 connected_users = 0
 
 
-@app.route('/qr_wifi.png')
-def qr_wifi():
+@app.route('/qr')
+def generate_qr():
+    # Generate QR images
     wifi_qr = qrcode.make(f"WIFI:T:WPA;S:{ssid};P:{password};;")
-    buf = BytesIO()
-    wifi_qr.save(buf, format='PNG')
-    buf.seek(0)
-    return send_file(buf, mimetype='image/png')
-
-@app.route('/qr_url.png')
-def qr_url():
     url_qr = qrcode.make(f"http://{site_ip}:{port}")
-    buf = BytesIO()
-    url_qr.save(buf, format='PNG')
-    buf.seek(0)
-    return send_file(buf, mimetype='image/png')
 
+    # Convert to base64
+    def qr_to_base64(qr_img):
+        buf = BytesIO()
+        qr_img.save(buf, format='PNG')
+        return base64.b64encode(buf.getvalue()).decode('utf-8')
+
+    wifi_base64 = qr_to_base64(wifi_qr)
+    url_base64 = qr_to_base64(url_qr)
+
+    # Render
+    return render_template_string('''
+        <html>
+        <body style="text-align:center; font-family:sans-serif">
+            <h3>📶 Scan to Connect to WiFi</h3>
+            <img src="data:image/png;base64,{{ wifi }}"><br><br>
+            <h3>🌐 Then Scan to Open Site</h3>
+            <img src="data:image/png;base64,{{ url }}">
+        </body>
+        </html>
+    ''', wifi=wifi_base64, url=url_base64)
 
 
 
