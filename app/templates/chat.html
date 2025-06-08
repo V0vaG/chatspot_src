@@ -3,7 +3,7 @@
 <head>
     <title>ChatSpot</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
@@ -32,9 +32,13 @@
         #qr-btn {
             background: none;
             border: none;
-            font-size: 20px;
-            color: white;
             cursor: pointer;
+        }
+
+        #qr-btn img {
+            width: 24px;
+            height: 24px;
+            filter: invert(1);
         }
 
         #chat-box {
@@ -145,7 +149,9 @@
         <span>ChatSpot – Welcome, {{ nickname }}</span>
         <div>
             <small id="user-count">Users Online: 1</small>
-            <button id="qr-btn">📱 QR</button>
+            <button id="qr-btn">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNnB4IiBoZWlnaHQ9IjE2cHgiIHZpZXdCb3g9IjAgMCAxNiAxNiI+PHJlY3Qgd2lkdGg9IjQiIGhlaWdodD0iNCIgeD0iMCIgeT0iMCIvPjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIHg9IjUiIHk9IjAiLz48cmVjdCB3aWR0aD0iMiIgaGVpZ2h0PSIyIiB4PSIxMCIgeT0iMCIvPjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIHg9IjEzIiB5PSIwIi8+PHJlY3Qgd2lkdGg9IjIiIGhlaWdodD0iMiIgeD0iMCIgeT0iNSIvPjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIHg9IjMiIHk9IjUiLz48cmVjdCB3aWR0aD0iMiIgaGVpZ2h0PSIyIiB4PSI1IiB5PSI1Ii8+PHJlY3Qgd2lkdGg9IjIiIGhlaWdodD0iMiIgeD0iMTAiIHk9IjUiLz48cmVjdCB3aWR0aD0iMSIgaGVpZ2h0PSIxIiB4PSIxMyIgeT0iNSIvPjxyZWN0IHdpZHRoPSIyIiBoZWlnaHQ9IjIiIHg9IjAiIHk9IjEwIi8+PHJlY3Qgd2lkdGg9IjEiIGhlaWdodD0iMSIgeD0iMyIgeT0iMTAiLz48cmVjdCB3aWR0aD0iMiIgaGVpZ2h0PSIyIiB4PSI1IiB5PSIxMCIvPjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIHg9IjciIHk9IjEwIi8+PHJlY3Qgd2lkdGg9IjIiIGhlaWdodD0iMiIgeD0iMTAiIHk9IjEwIi8+PHJlY3Qgd2lkdGg9IjEiIGhlaWdodD0iMSIgeD0iMTMiIHk9IjEwIi8+PC9zdmc+" alt="QR Icon">
+            </button>
         </div>
     </header>
 
@@ -163,7 +169,10 @@
     <!-- QR Modal -->
     <div id="qr-modal">
         <div id="qr-modal-content">
-            <img src="/qr" alt="QR Code">
+            <h3>📶 WiFi</h3>
+            <img src="/qr_wifi.png" alt="WiFi QR Code">
+            <h3>🌐 Site</h3>
+            <img src="/qr_url.png" alt="Site QR Code">
             <br>
             <button onclick="document.getElementById('qr-modal').style.display='none'">Close</button>
         </div>
