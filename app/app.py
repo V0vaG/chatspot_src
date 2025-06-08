@@ -50,9 +50,9 @@ connected_users = 0
 
 @app.route('/qr')
 def generate_qr():
-    ssid = ssid
-    password = password
-    url = f"http://{site_ip}:{port}"
+    ssid = 'ChatSpot'
+    password = '12345678'
+    url = f"http://192.168.4.1:{port}"
 
     wifi_qr_text = f"WIFI:T:WPA;S:{ssid};P:{password};;\n{url}"
     img = qrcode.make(wifi_qr_text)
