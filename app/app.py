@@ -3,7 +3,7 @@ import eventlet
 eventlet.monkey_patch()
 
 # Then continue with your imports
-from flask import Flask, send_file, render_template, request, redirect, session, url_for, send_from_directory
+from flask import Flask, send_file, render_template, request, redirect, session, url_for, send_from_directory, render_template_string
 from flask_socketio import SocketIO, send, emit
 import os
 from werkzeug.utils import secure_filename
@@ -50,14 +50,27 @@ connected_users = 0
 
 @app.route('/qr')
 def generate_qr():
-    url = f"http://{site_ip}:{port}"
+    wifi_qr = qrcode.make(f"WIFI:T:WPA;S:{ssid};P:{password};;")
+    url_qr = qrcode.make(f"http://{site_ip}:{port}")
 
-    wifi_qr_text = f"WIFI:T:WPA;S:{ssid};P:{password};;\n{url}"
-    img = qrcode.make(wifi_qr_text)
-    buf = BytesIO()
-    img.save(buf, format='PNG')
-    buf.seek(0)
-    return send_file(buf, mimetype='image/png')
+    wifi_buf = BytesIO()
+    url_buf = BytesIO()
+    wifi_qr.save(wifi_buf, format='PNG')
+    url_qr.save(url_buf, format='PNG')
+    wifi_b64 = wifi_buf.getvalue()
+    url_b64 = url_buf.getvalue()
+
+    return render_template_string('''
+        <html>
+        <body style="text-align:center; font-family:sans-serif">
+            <h3>📶 Scan to Connect to WiFi</h3>
+            <img src="data:image/png;base64,{{ wifi | b64encode | decode() }}"><br><br>
+            <h3>🌐 Then Scan to Open Site</h3>
+            <img src="data:image/png;base64,{{ url | b64encode | decode() }}">
+        </body>
+        </html>
+    ''', wifi=wifi_b64, url=url_b64)
+
 
 
 @app.route('/', methods=['GET', 'POST'])
