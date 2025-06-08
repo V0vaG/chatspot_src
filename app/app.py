@@ -19,7 +19,7 @@ hot_spot_enabled = True  # Set to True to enable hotspot mode
 print(f"hot_spot: {hot_spot_enabled}")
 
 if  hot_spot_enabled:
-    ssid = 'vovaHotspot2'
+    ssid = 'ChatSpot'
     password = '12345678'
     site_ip = '192.168.4.1'
 
