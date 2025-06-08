@@ -122,11 +122,18 @@
             align-items: center;
         }
 
+
+        #qr-modal.show {
+            display: flex;
+        }
+
+
         #qr-modal-content {
             background: white;
             padding: 20px;
             border-radius: 10px;
             text-align: center;
+            max-width: 90%;
         }
 
         #qr-modal-content img {
@@ -167,16 +174,18 @@
     </form>
 
     <!-- QR Modal -->
+    <!-- QR Modal -->
     <div id="qr-modal">
         <div id="qr-modal-content">
             <h3>📶 WiFi</h3>
-            <img src="/qr_wifi.png" alt="WiFi QR Code">
+            <img id="qr-wifi" src="" alt="WiFi QR Code">
             <h3>🌐 Site</h3>
-            <img src="/qr_url.png" alt="Site QR Code">
+            <img id="qr-url" src="" alt="Site QR Code">
             <br>
-            <button onclick="document.getElementById('qr-modal').style.display='none'">Close</button>
+            <button id="close-qr">Close</button>
         </div>
     </div>
+
 
     <script>
         var socket = io();
