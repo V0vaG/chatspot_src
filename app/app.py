@@ -9,7 +9,7 @@ import os
 from werkzeug.utils import secure_filename
 import qrcode
 from io import BytesIO
-
+import base64
 from hotspot import start_hotspot
 
 port = 5000
@@ -50,26 +50,35 @@ connected_users = 0
 
 @app.route('/qr')
 def generate_qr():
+    ssid = 'ChatSpot'
+    password = '12345678'
+    site_ip = '192.168.4.1'
+    port = 5000
+
+    # Generate QR images
     wifi_qr = qrcode.make(f"WIFI:T:WPA;S:{ssid};P:{password};;")
     url_qr = qrcode.make(f"http://{site_ip}:{port}")
 
-    wifi_buf = BytesIO()
-    url_buf = BytesIO()
-    wifi_qr.save(wifi_buf, format='PNG')
-    url_qr.save(url_buf, format='PNG')
-    wifi_b64 = wifi_buf.getvalue()
-    url_b64 = url_buf.getvalue()
+    # Convert to base64
+    def qr_to_base64(qr_img):
+        buf = BytesIO()
+        qr_img.save(buf, format='PNG')
+        return base64.b64encode(buf.getvalue()).decode('utf-8')
 
+    wifi_base64 = qr_to_base64(wifi_qr)
+    url_base64 = qr_to_base64(url_qr)
+
+    # Render
     return render_template_string('''
         <html>
         <body style="text-align:center; font-family:sans-serif">
             <h3>📶 Scan to Connect to WiFi</h3>
-            <img src="data:image/png;base64,{{ wifi | b64encode | decode() }}"><br><br>
+            <img src="data:image/png;base64,{{ wifi }}"><br><br>
             <h3>🌐 Then Scan to Open Site</h3>
-            <img src="data:image/png;base64,{{ url | b64encode | decode() }}">
+            <img src="data:image/png;base64,{{ url }}">
         </body>
         </html>
-    ''', wifi=wifi_b64, url=url_b64)
+    ''', wifi=wifi_base64, url=url_base64)
 
 
 
