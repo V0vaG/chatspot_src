@@ -3,7 +3,7 @@ import eventlet
 eventlet.monkey_patch()
 
 # Then continue with your imports
-from flask import Flask, render_template, request, redirect, session, url_for, send_from_directory
+from flask import Flask, send_file, render_template, request, redirect, session, url_for, send_from_directory
 from flask_socketio import SocketIO, send, emit
 import os
 from werkzeug.utils import secure_filename
