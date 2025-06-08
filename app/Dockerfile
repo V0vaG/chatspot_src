@@ -3,23 +3,13 @@ FROM python:3.11-slim
 
 # Install build tools and dependencies
 # RUN apt-get update && apt-get install -y \
+#     build-essential \
 #     python3-dev \
-#     python3-pip \
-#     git \
-#     cmake \
-#     make \
-#     g++ \
-#     libboost-python-dev \
-#     libboost-system-dev \
-#     libboost-thread-dev \
-#     hostapd \
-#     dnsmasq \
-#     iproute2 \
-#     iptables \
-#     iw \
-#     net-tools && \
-#     apt clean && \
-#     rm -rf /var/lib/apt/lists/*
+#     libffi-dev \
+#     libssl-dev \
+#     libnss3 \
+#     libatlas-base-dev \
+#     && rm -rf /var/lib/apt/lists/*
 
 # Install Python packages
 # RUN pip3 install Flask RPi.GPIO
@@ -43,6 +33,7 @@ WORKDIR ~/
 
 COPY ./requirements.txt .
 
+RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 COPY . .
