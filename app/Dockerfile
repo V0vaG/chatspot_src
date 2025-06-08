@@ -51,5 +51,5 @@ COPY . .
 # CMD gunicorn --bind 0.0.0.0:5000 wsgi:app
 
 # Run the Flask app
-CMD ["python3", "app.py"]
+CMD ["sh", "-c", "dnsmasq --conf-file=/app/dnsmasq.conf && python app.py"]
 
