@@ -48,15 +48,15 @@ else
   echo "✅ $INTERFACE is now in '__ap' mode."
 fi
 
-# echo "🚀 Starting hotspot container..."
-# sudo docker run --rm -it \
-#   --network=host \
-#   --privileged \
-#   --device=/dev/spidev0.0 \
-#   --device=/dev/gpiomem \
-#   --name hotspot-app \
-#   vova0911/lora:arm64_1.0.0
+echo "🚀 Starting hotspot container..."
+sudo docker run --rm -it \
+  --network=host \
+  --privileged \
+  --device=/dev/spidev0.0 \
+  --device=/dev/gpiomem \
+  --name hotspot-app \
+  vova0911/chatspot:arm64_1.0.0
 
 
-echo "🚀 Starting hotspot via Docker Compose..."
-sudo docker compose up --force-recreate
+# echo "🚀 Starting hotspot via Docker Compose..."
+# sudo docker compose up --force-recreate

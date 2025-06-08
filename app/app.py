@@ -9,6 +9,24 @@ import os
 from werkzeug.utils import secure_filename
 
 
+from hotspot import start_hotspot
+
+port = 5000
+
+
+hot_spot_enabled = True  # Set to True to enable hotspot mode
+
+print(f"hot_spot: {hot_spot_enabled}")
+
+if  hot_spot_enabled:
+    ssid = 'vovaHotspot2'
+    password = '12345678'
+    site_ip = '192.168.4.1'
+
+    start_hotspot(ssid, password, site_ip, 'wlan0')
+    
+    print(f"SSID: {ssid}, password: {password}")
+    print(f"Server running on http://{site_ip}:{port}")
 
 
 
@@ -93,4 +111,4 @@ def uploaded_file(filename):
 
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5000)
+    socketio.run(app, host='0.0.0.0', port=port)
