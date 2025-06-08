@@ -1,8 +1,11 @@
+# ✅ Do this first — before anything else!
+import eventlet
+eventlet.monkey_patch()
+
+# Then continue with your imports
 from flask import Flask, render_template, request, redirect, session, url_for
 from flask_socketio import SocketIO, send
-import eventlet
 
-eventlet.monkey_patch()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'supersecret'
