@@ -20,6 +20,21 @@
             color: white;
             padding: 10px;
             font-size: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #user-count {
+            font-size: 14px;
+        }
+
+        #qr-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: white;
+            cursor: pointer;
         }
 
         #chat-box {
@@ -91,12 +106,47 @@
         #send-button:hover {
             background-color: #0b806a;
         }
+
+        /* QR Modal */
+        #qr-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #qr-modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        #qr-modal-content img {
+            max-width: 300px;
+            margin-bottom: 10px;
+        }
+
+        #qr-modal-content button {
+            padding: 8px 16px;
+            border: none;
+            background-color: #075E54;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <header>
-        ChatSpot – Welcome, {{ nickname }} <br>
-        <small id="user-count">Users Online: 1</small>
+        <span>ChatSpot – Welcome, {{ nickname }}</span>
+        <div>
+            <small id="user-count">Users Online: 1</small>
+            <button id="qr-btn">📱 QR</button>
+        </div>
     </header>
 
     <div id="chat-box"></div>
@@ -109,6 +159,15 @@
 
         <button type="submit" id="send-button">➤</button>
     </form>
+
+    <!-- QR Modal -->
+    <div id="qr-modal">
+        <div id="qr-modal-content">
+            <img src="/qr" alt="QR Code">
+            <br>
+            <button onclick="document.getElementById('qr-modal').style.display='none'">Close</button>
+        </div>
+    </div>
 
     <script>
         var socket = io();
@@ -156,6 +215,10 @@
 
                 fileInput.value = '';
             }
+        });
+
+        document.getElementById('qr-btn').addEventListener('click', () => {
+            document.getElementById('qr-modal').style.display = 'flex';
         });
     </script>
 </body>

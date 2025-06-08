@@ -7,7 +7,8 @@ from flask import Flask, render_template, request, redirect, session, url_for, s
 from flask_socketio import SocketIO, send, emit
 import os
 from werkzeug.utils import secure_filename
-
+import qrcode
+from io import BytesIO
 
 from hotspot import start_hotspot
 
@@ -45,6 +46,20 @@ app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10MB limit
 
 
 connected_users = 0
+
+
+@app.route('/qr')
+def generate_qr():
+    ssid = 'vovaHotspot2'
+    password = '12345678'
+    url = f"http://192.168.4.1:{port}"
+
+    wifi_qr_text = f"WIFI:T:WPA;S:{ssid};P:{password};;\n{url}"
+    img = qrcode.make(wifi_qr_text)
+    buf = BytesIO()
+    img.save(buf, format='PNG')
+    buf.seek(0)
+    return send_file(buf, mimetype='image/png')
 
 
 @app.route('/', methods=['GET', 'POST'])
